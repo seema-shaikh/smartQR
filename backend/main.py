@@ -17,17 +17,14 @@ from app.utility import Logger
 load_dotenv()
 from flask_jwt_extended import JWTManager, jwt_required , get_jwt_identity 
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG', default=False)
-DATABASE_URL = os.environ.get('DATABASE_URL')
-# app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
-# app.config['JWT_TOKEN_LOCATION'] = ['headers']
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = SECRET_KEY
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
     app.config['JWT_TOKEN_LOCATION'] = ['headers']
     app.config['JWT_SECRET_KEY'] = str(app.config['SECRET_KEY'])
+    # app.config['DEBUG'] = os.environ.get('DEBUG', default=False)
+    # app.config['DATABASE_URL'] = os.environ.get('DATABASE_URL')
     return app
 
 app = create_app() 
@@ -63,8 +60,8 @@ def user_signup():
 
         id = User(mongo_conn = mongo).create_user(user_data)
         if id:
-            return {"message": "User signed up successfully", "response": user_data }
-        return {"message": "User could not be registered", 'Status': '400'}
+            return {"message": "User signed up successfully", "status": 200 }
+        return {"message": "User could not be registered", 'status': 400 }
     except:
         log = Logger(module_name="/user/signup", function_name="user_signup()")
         log.log(traceback.format_exc())

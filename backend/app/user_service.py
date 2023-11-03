@@ -8,7 +8,6 @@ class User:
         self.__mongo = DBConnectivity.create_mongo_connection() if 'mongo_conn' not in kwargs else kwargs['mongo_conn']
         self.user_obj = self.__mongo["users"]
         if self.__id != "":
-            # isme nai jayega id nai pass kiya maine
             self.user_obj = self.__mongo["users"].find_one({'_id': self.__id})
 
     def create_user(self, user_data):
@@ -17,15 +16,12 @@ class User:
             "created_on": time.time(),
             "updated_on": time.time()
         })
-        # Hash the password
         hashed_password = bcrypt.hashpw(user_data["password"].encode('utf-8'), bcrypt.gensalt())
-        print("hashed", hashed_password)
         user_data.update({"password": hashed_password})
         result = self.user_obj.insert_one(user_data)
         inserted_id = result.inserted_id
         return inserted_id
 
-    # no haa
     def get_user_by_id(self, user_id):
         data = self.user_obj.find_one({'_id': user_id})
         if data:
@@ -33,14 +29,10 @@ class User:
         return []
     
     def get_user_by_email(self, email):
-        # 'vo haina email nai bhi hai toh jaaraha hai existing usre mein'
         data = self.user_obj.find_one({'email': email})
         if data:
             return data
         return []
-
-    def get_all_users(self):
-        return list(self.user_obj.find())
 
     def update_user(self, user_id, new_data):
         if "password" in new_data:
