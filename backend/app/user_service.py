@@ -1,6 +1,7 @@
 import time
-from app.utility import DBConnectivity
 import bcrypt
+from app.utility import DBConnectivity
+
 
 class User:
     def __init__(self, _id="", **kwargs):

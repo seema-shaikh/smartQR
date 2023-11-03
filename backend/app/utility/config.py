@@ -1,41 +1,39 @@
+import json
 import os
+import platform
 
-# uncomment the line below for postgres database url from environment variable
-# postgres_local_base = os.environ['DATABASE_URL']
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-
+app_name = '/'.join(os.path.dirname(os.path.realpath(__file__)).split('\\' if platform.system() == 'Windows' else '/')[:-1])
+with open(app_name + '/.secrets.json') as f:
+    settings = json.load(f)
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
     DEBUG = False
-
 
 class DevelopmentConfig(Config):
-    # uncomment the line below to use postgres
-    # SQLALCHEMY_DATABASE_URI = postgres_local_base
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'flask_boilerplate_main.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    FLASK_ENV = settings.get("development").get("FLASK_ENV")
+    SECRET_KEY =  settings.get("development").get("FLASK_SECRET_KEY")
+    JWT_TOKEN_LOCATION =  ['headers']
+    JWT_SECRET_KEY =  settings.get("development").get("FLASK_SECRET_KEY")
+    DEBUG =  settings.get("development").get("FLASK_DEBUG") 
+    DATABASE_URL =  settings.get("development").get("FLASK_DATABASE_URI")
 
-
-class TestingConfig(Config):
-    DEBUG = True
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'flask_boilerplate_test.db')
-    PRESERVE_CONTEXT_ON_EXCEPTION = False
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
+class StagingConfig(Config):
+    FLASK_ENV = settings.get("staging").get("FLASK_ENV")
+    SECRET_KEY =  settings.get("staging").get("FLASK_SECRET_KEY")
+    JWT_TOKEN_LOCATION =  ['headers']
+    JWT_SECRET_KEY =  settings.get("staging").get("FLASK_SECRET_KEY")
+    DEBUG =  settings.get("staging").get("FLASK_DEBUG") 
+    DATABASE_URL =  settings.get("staging").get("FLASK_DATABASE_URI")
 
 class ProductionConfig(Config):
-    DEBUG = False
-    # uncomment the line below to use postgres
-    # SQLALCHEMY_DATABASE_URI = postgres_local_base
-
+    FLASK_ENV = settings.get("production").get("FLASK_ENV")
+    SECRET_KEY =  settings.get("production").get("FLASK_SECRET_KEY")
+    JWT_TOKEN_LOCATION =  ['headers']
+    JWT_SECRET_KEY =  settings.get("production").get("FLASK_SECRET_KEY")
+    DEBUG =  settings.get("production").get("FLASK_DEBUG") 
+    DATABASE_URL =  settings.get("production").get("FLASK_DATABASE_URI")
 
 config_by_name = dict(
     dev=DevelopmentConfig,
-    test=TestingConfig,
+    test=StagingConfig,
     prod=ProductionConfig
 )
-
-key = Config.SECRET_KEY

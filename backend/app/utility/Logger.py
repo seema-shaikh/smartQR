@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import uuid
 from app.utility import DBConnectivity
 
@@ -12,7 +12,6 @@ class Logger:
         self.__user_id = user_id
         self.__mongo = DBConnectivity.create_mongo_connection()
         self.__log = self.__mongo["logs"]
-        # self.__log = DictionaryOps.convert_mongo_cursor_to_dict(self.__mongo[conf.mongoconfig.get('tables').get('log_table')].find({}))
 
     def log(self,error,priority='high'):
         log_event = {
@@ -25,5 +24,5 @@ class Logger:
                 "user_id" : self.__user_id
             }
         
-        result = self.__mongo["logs"].insert_time_series([log_event])
+        return self.__mongo["logs"].insert_time_series([log_event])
 
